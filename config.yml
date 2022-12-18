@@ -1,0 +1,6 @@
+#
+# Configuration file
+
+default:
+  max_days_stored: 5
+  db: sqlite://db/arxiv-sieve.sqlite3
