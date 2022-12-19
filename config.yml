@@ -4,3 +4,7 @@
 default:
   max_days_stored: 5
   db: sqlite://db/arxiv-sieve.sqlite3
+  categories: math.DG, math.MG, math.AT, math.GT
+  keywords: interesting, things, in, differential, geometry
+  order_by: nothing # subject, name, authors
+  ignore_updates: false
