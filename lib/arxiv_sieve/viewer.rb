@@ -45,7 +45,7 @@ module ArxivSieve
         @keywords_distribution = Hash.new
         @output_items = Array.new
 
-        html_file = File.new("arxiv-sieve.html", "w+")
+        html_file = File.new("#{__dir__}/../../html/arxiv-sieve.html", "w+")
 
         process_content
 

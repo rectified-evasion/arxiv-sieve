@@ -19,8 +19,13 @@ module ArxivSieve
 
     def fetch
 
-      # Set url of arxiv api
-      urls = [ 'http://export.arxiv.org/rss/math' ]
+      # Determine which categories we need to fetch specifically
+      # CAVEAT: at the moment the fetcher ignores the user table, so categories are only selected from the config file
+      urls = Array.new
+      urls = @options.categories.split(',')
+      urls.map! do |url|
+        "http://export.arxiv.org/rss/#{url.strip}"
+      end
 
       begin
         db = Sequel.connect(@options.db)
@@ -30,7 +35,7 @@ module ArxivSieve
           tab = db[:tables]
           # most_recent_table = tab.order(:datetime).limit(1).first
 
-          # never store more than [max_days_stored] tables (from config)
+          # never store more than [max_days_stored] tables
           allowed_number = 0
           tab.order(Sequel.desc(:id)).each do |table|
             if db.table_exists?("table#{table[:id]}") then
