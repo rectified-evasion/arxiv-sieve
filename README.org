@@ -1,0 +1,68 @@
+* About Arxiv Sieve
+A minimalisitc program that fetches daily updates from =arxiv.org= using an rss feed and the API.
+Can display the results in an html page where given keywords are highlighted.
+Moreover, can be used to send emails if at least one keyword in the list is hit.
+
+* Installation and set up
+
+Some prerequisites
+#+BEGIN_SRC sh
+  sudo apt-get install git ruby sqlite3 ruby-bundler
+#+END_SRC
+Then run the bundler to install gems from the Gemfile
+#+BEGIN_SRC sh
+  bundle install
+#+END_SRC
+
+Now fill in the configuration details in =config.yml=
+- =general=
+  + =max_days_stored=
+  + =db= specifies a database connection (in the style of a =sequel= connection string (cf. [[https://sequel.jeremyevans.net/rdoc/files/doc/opening_databases_rdoc.html][Sequel documentation: Opening databases]]),
+- =user=
+  + =categories= comma seperated list of Arxiv categories that should be fetched from (e.g. =math.DG= for differential geometry or =astro-ph= for astrophysics, cf. [[arxiv.org]])
+  + =keywords= comma seperated list of keywords that should be highlighted/searched for, putting =?= in front of a keyword results in case-insensitive search
+  + =order_by= possible values for sorting in the html output: =nothing, subject, name, authors=
+  + =ignore_updates= ignore entries which are only updates, not genuinely new articles
+  + =email= email address to send a notification to if at least one keyword is found
+- =smtp=
+  + =server= SMTP server to send emails
+  + =port=
+  + =host=
+  + =from= email address to send emails from
+  + =password=
+#+END_SRC
+
+It is also possible to specify multiple users in the database to send emails to.
+
+Possibly set up a cronjob by running =crontab -e= and add something like the following:
+#+BEGIN_SRC sh
+1 9 * * 1-5 . $HOME/.bash_profile; BUNDLE_GEMFILE=PATH-TO-ARXIV-SIEVE/Gemfile bundle exec PATH-TO-ARXIV-SIEVE/bin/arxiv-sieve fetch view mail
+#+END_SRC
+(This here runs Mon-Fri at 9am executing fetch, view and mail functions, cf. below.)
+
+* Usage
+
+Possible functions and options are listed running
+#+BEGIN_SRC sh
+  bin/arxiv-sieve --help
+#+END_SRC
+
+The program has three main functions, all of them can be run individually or in a single call
+1. =bin/arxiv-sieve fetch=
+   Fetch todays new articles from the arxiv =categories= specified in =config.yml= and write them to a database.
+2. =bin/arxiv-sieve view=
+  Create an html representation of the table of articles most recently fetched highlighting keywords.
+  (=html/example.html= provides an idea how this might look like for you.)
+3. =bin/arxiv-sieve mail=
+   Sift through the most recent table of articles using the list of keywords and sending a notification email, if something was found.
+
+* Alternatives
+
+This is a slightly cleaned up version of a hacky script that I had running since 2016 on a server.
+Depending on your purpose there should be a lot of other options nowadays - most of them with a much larger scope and feature set.
+Without having tested any of them, a quick search got me:
+- https://github.com/karpathy/arxiv-sanity-lite
+- https://iarxiv.org
+- https://github.com/domischi/arxiv-digest
+- https://github.com/bschiela/arxiv_digest
+- etc.
